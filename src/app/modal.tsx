@@ -2,9 +2,9 @@ import { Anchor, Paragraph, View, XStack } from 'tamagui'
 
 export default function ModalScreen() {
   return (
-    <View flex={1} items="center" justify="center">
+    <View flex={1} alignItems="center" justifyContent="center">
       <XStack gap="$2">
-        <Paragraph text="center">Made by</Paragraph>
+        <Paragraph alignSelf="center">Made by</Paragraph>
         <Anchor color="$blue10" href="https://twitter.com/natebirdman" target="_blank">
           @natebirdman,
         </Anchor>
@@ -20,3 +20,5 @@ export default function ModalScreen() {
     </View>
   )
 }
+
+

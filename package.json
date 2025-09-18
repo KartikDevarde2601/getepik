@@ -18,15 +18,20 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.30",
+    "@ai-sdk/react": "^2.0.44",
     "@react-navigation/native": "^6.1.17",
     "@tamagui/config": "^1.132.24",
+    "@tamagui/linear-gradient": "^1.132.25",
     "@tamagui/lucide-icons": "^1.132.24",
     "@tamagui/toast": "^1.132.24",
+    "ai": "^5.0.44",
     "babel-preset-expo": "~13.0.0",
     "burnt": "^0.12.2",
     "expo": "53.0.7",
     "expo-build-properties": "~0.14.6",
     "expo-font": "~13.3.1",
+    "expo-linear-gradient": "~14.1.5",
     "expo-linking": "~7.1.4",
     "expo-router": "~5.0.5",
     "expo-splash-screen": "~0.30.8",
@@ -41,7 +46,8 @@
     "react-native-screens": "~4.10.0",
     "react-native-svg": "15.11.2",
     "react-native-web": "^0.20.0",
-    "tamagui": "^1.132.24"
+    "tamagui": "^1.132.24",
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",

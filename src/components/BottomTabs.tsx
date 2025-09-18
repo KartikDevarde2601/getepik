@@ -15,7 +15,7 @@ export function BottomTabs({ state, descriptors, navigation }: ExpoTabBarProps) 
   const media = useMedia()
   const { bottom } = useSafeAreaInsets()
 
-  if (media.md) return null
+  if (media.gtSm) return null
 
   const icons: Record<string, IconComponent> = {
     index: Home,
