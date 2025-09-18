@@ -6,7 +6,7 @@ export async function POST(req: Request) {
 
 
   const openrouter = createOpenRouter({
-    apiKey:'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',
+    apiKey:process.env.EXPO_PUBLIC_OPENROUTER_API_KEY,
   });
 
   const result = streamText({
