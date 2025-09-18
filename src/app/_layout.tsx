@@ -1,3 +1,4 @@
+import '../utils/polyfills';
 import '../../tamagui-web.css'
 
 import { useEffect } from 'react'

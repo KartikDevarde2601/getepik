@@ -26,11 +26,12 @@ export const AdaptivePopOver = ({
       <Popover.Trigger asChild>{trigger}</Popover.Trigger>
 
       <Adapt when="sm">
-        <Popover.Sheet modal dismissOnSnapToBottom>
+        <Popover.Sheet modal dismissOnSnapToBottom >
           <Popover.Sheet.Frame 
             padding="$0" 
-            backgroundColor="#f9f9f9" 
+            backgroundColor="#ffff" 
             borderRadius="$8"
+            elevation={10}
             flex={1}
           >
             <KeyboardAvoidingView
@@ -74,7 +75,7 @@ export const AdaptivePopOver = ({
             alignSelf="center" 
             borderWidth="$1" 
             borderRadius="$4" 
-            borderColor="$borderColorHover" 
+            borderColor="black" 
           />
           {children}
         </KeyboardAvoidingView>

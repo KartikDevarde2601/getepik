@@ -1,62 +1,70 @@
-import React, { useState } from 'react';
-import { 
-  YStack, 
-  XStack, 
-  Input,
-  ScrollView,
-  Text,
-  Avatar,
-  Button
-} from 'tamagui';
-import { Send, Bot } from '@tamagui/lucide-icons';
-import {BotMessageSquare,History} from '@tamagui/lucide-icons';
+import { useState, useRef, useEffect } from 'react';
+import {generateAPIUrl} from '../utils/generateAPIUrl'
+import {
+View,
+ScrollView,
+XStack,
+YStack,
+Button,
+Text,
+Input
+ } from 'tamagui'
+ import {BotMessageSquare,History,Send} from '@tamagui/lucide-icons'
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { fetch as expoFetch } from 'expo/fetch';
+import { KeyboardAvoidingView,Platform } from 'react-native';
 import { useTheme } from 'tamagui';
-// Message interface
-interface Message {
-  id: string;
-  text: string;
-  isBot: boolean;
-  timestamp: Date;
-}
 
-// ChatUI Component
-export const ChatUI = () => {
-  const theme = useTheme();
-  const [messages, setMessages] = React.useState<Message[]>([]);
 
-  const [inputText, setInputText] = React.useState('');
+// ✅ OpenRouter headers
+const OPENROUTER_HEADERS = {
+  Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENROUTER_API_KEY}`,
+  'HTTP-Referer': 'https://yourapp.com', // required by OpenRouter
+  'X-Title': 'My Expo Chat App',         // optional, helps OpenRouter dashboard
+};
 
-  const sendMessage = () => {
-    if (inputText.trim()) {
-      const newMessage = {
-        id: Date.now().toString(),
-        text: inputText.trim(),
-        isBot: false,
-        timestamp: new Date(),
-      };
+export default function ChatUI() {
+  const [input, setInput] = useState('');
+  const scrollViewRef = useRef<ScrollView>(null);
 
-      setMessages(prev => [...prev, newMessage]);
-      const currentInput = inputText.trim();
-      setInputText('');
+  const theme = useTheme()
 
-      // Simulate bot response after a delay
-      setTimeout(() => {
-        const botResponse = {
-          id: (Date.now() + 1).toString(),
-          text: `I received your message: "${currentInput}". How can I assist you further?`,
-          isBot: true,
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, botResponse]);
-      }, 1000);
+   const { messages, error, sendMessage } = useChat({
+    transport: new DefaultChatTransport({
+      fetch: expoFetch as unknown as typeof globalThis.fetch,
+      api: generateAPIUrl('/api/chat'),
+    }),
+    onError: error => console.error(error, 'ERROR'),
+  });
+
+  if (error) return <Text>{error.message}</Text>;
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
     }
-  };
+  }, [messages]);
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (error) return <Text>{error}</Text>;
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+
+    sendMessage({
+      text: input,
+    });
+
+    setInput('');
   };
 
   return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} // Adjust this offset as needed
+    >
     <YStack flex={1} height="100%" padding='$2'>
       {/* Chat Header */}
       <XStack
@@ -87,42 +95,53 @@ export const ChatUI = () => {
         </YStack>
         <History size={24} color={theme.color10} />
       </XStack>
-
-      {/* Messages Area */}
-      <ScrollView
-        flex={1}
-        padding="$2"
-        showsVerticalScrollIndicator={false}
-      >
-        <YStack gap="$2">
-          {messages.map((message) => (
-            <XStack
-              key={message.id}
-              justifyContent={message.isBot ? 'flex-start' : 'flex-end'}
-              marginHorizontal="$2"
+        <ScrollView
+          ref={scrollViewRef}
+          style={{ flex: 1, padding: 12 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
+          {messages.map((m) => (
+            <View
+              key={m.id}
+              style={{
+                marginVertical: 6,
+                flexDirection: 'row',
+                justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
+              }}
             >
-              <YStack
-                maxWidth="80%"
-                backgroundColor={!message.isBot ? '$blue9' :'#f9f9f9' } 
-                padding="$2"
-                borderRadius="$4"
-                borderTopLeftRadius={message.isBot ? '$1' : '$4'}
-                borderTopRightRadius={message.isBot ? '$4' : '$1'}
+              <View
+                style={{
+                  maxWidth: '75%',
+                  padding: 10,
+                  borderRadius: 18,
+                  backgroundColor: m.role === 'user' ? '#007AFF' : 'h',
+                  borderBottomRightRadius: m.role === 'user' ? 4 : 18,
+                  borderBottomLeftRadius: m.role === 'user' ? 18 : 4,
+                }}
               >
-                <Text
-                  color={message.isBot ? '$color12' : 'white'}
-                  fontSize="$3"
-                  lineHeight="$1"
-                >
-                  {message.text}
-                </Text>
-              </YStack>
-            </XStack>
+                {m.parts.map((part, i) => {
+                  if (part.type === 'text') {
+                    return (
+                      <Text
+                        key={`${m.id}-${i}`}
+                        style={{
+                          color: m.role === 'user' ? 'white' : 'black',
+                          fontSize: 16,
+                          lineHeight: 20,
+                        }}
+                      >
+                        {part.text}
+                      </Text>
+                    );
+                  }
+                  return null;
+                })}
+              </View>
+            </View>
           ))}
-        </YStack>
-      </ScrollView>
+        </ScrollView>
 
-      {/* Input Area */}
+        {/* Input Area */}
       <XStack
         padding="$3"
         borderTopWidth={1}
@@ -134,9 +153,9 @@ export const ChatUI = () => {
         <Input
           flex={1}
           placeholder="Type a message..."
-          value={inputText}
-          onChangeText={setInputText}
-          onSubmitEditing={sendMessage}
+          value={input}
+          onChangeText={setInput}
+          onSubmitEditing={handleSend}
           returnKeyType="send"
           multiline
           maxHeight={100}
@@ -146,13 +165,14 @@ export const ChatUI = () => {
           circular
           backgroundColor="$blue9"
           pressStyle={{ backgroundColor: '$blue10' }}
-          onPress={sendMessage}
-          disabled={!inputText.trim()}
-          opacity={inputText.trim() ? 1 : 0.5}
+          onPress={handleSend}
+          disabled={!input.trim()}
+          opacity={input.trim() ? 1 : 0.5}
         >
           <Send size={16} color="white" />
         </Button>
       </XStack>
-    </YStack>
+   </YStack>
+ </KeyboardAvoidingView>
   );
-};
+}

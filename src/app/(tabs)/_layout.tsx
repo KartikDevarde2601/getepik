@@ -4,7 +4,7 @@ import { useTheme, YStack, View, Button } from 'tamagui';
 import { BottomTabs } from '../../components/BottomTabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AdaptivePopOver } from '../../components/adaptivePopover';
-import { ChatUI } from '../../components/chatUI'
+import  ChatUI  from '../../components/chatUI'
 import { BotMessageSquare } from '@tamagui/lucide-icons';
 
 export default function TabLayout() {

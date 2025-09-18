@@ -1,35 +1,44 @@
+import React, { useState } from 'react'
 import {
-  XStack,
+  H1,
   YStack,
-   Image,
-  Text,
-  ZStack
+  View,
+  ScrollView,
+  XStack,
+  H4
 } from 'tamagui'
-import HeaderNav from 'src/components/headerNav'
-import { LinearGradient } from 'tamagui/linear-gradient'
+import HeaderNavWithCollection from 'src/components/headerNavWithCollection';
+import DemoCrousal from 'src/components/demoCrousal';
+import ProductCard from 'src/components/productCard';
 
 
 export function HomeScreen() {
+
+  const [searchValue, setSearchValue] = useState('');
+
   return (
     <YStack
       flex={1}
-    >
-    <YStack>
-    <ZStack position="relative" height={150}>
-  <LinearGradient
-    start={[0, 0]}
-    end={[0, 1]}
-    colors={["$blue11", "white"]}
-    width="100%"
-    height="100%"
-    position="absolute"
-  />
-  
-  <HeaderNav />
-</ZStack>
-
-</YStack>
-
+>
+      <HeaderNavWithCollection />
+      <ScrollView gap='$2'>
+    <DemoCrousal />
+    <View gap='$4' paddingHorizontal='$4'>
+   <H4>Top Deals at Epik</H4>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+        <XStack gap='$4'>
+          <ProductCard/>
+            <ProductCard/>
+              <ProductCard/>
+                <ProductCard/>
+        </XStack>
+      
+      </ScrollView>
+    </View>
+    
+      </ScrollView>
+      
+      
     </YStack>
   )
 }
