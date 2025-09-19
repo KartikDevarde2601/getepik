@@ -126,7 +126,7 @@ export default function ChatUI() {
             >
               <View
                 style={{
-                  maxWidth: '75%',
+                  maxWidth: '90%',
                   padding: 10,
                   borderRadius: 18,
                   backgroundColor: m.role === 'user' ? '#007AFF' : 'h',
