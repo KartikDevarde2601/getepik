@@ -59,7 +59,19 @@ Run on:
 
 ## 📸 Screenshots (Optional)
 
-*Add screenshots or gifs here to showcase your app.*
+### 📱 iPhone Screens
+
+<p float="left">
+  <img src="./assets/screenshots/iphone01.png" width="30%" />
+  <img src="./assets/screenshots/iphone02.png" width="30%" />
+  <img src="./assets/screenshots/iphone03.png" width="30%" />
+</p>
+
+
+### Chat Bot Vidoe
+## 🎥 Demo Video
+
+[![Watch the demo](https://img.youtube.com/vi/XLuyZ8GgMwc/hqdefault.jpg)](https://youtu.be/XLuyZ8GgMwc)
 
 ---
 
