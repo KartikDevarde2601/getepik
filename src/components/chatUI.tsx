@@ -7,7 +7,8 @@ XStack,
 YStack,
 Button,
 Text,
-Input
+Input,
+H4
  } from 'tamagui'
  import {BotMessageSquare,History,Send} from '@tamagui/lucide-icons'
 import { useChat } from '@ai-sdk/react';
@@ -15,9 +16,21 @@ import { DefaultChatTransport } from 'ai';
 import { fetch as expoFetch } from 'expo/fetch';
 import { KeyboardAvoidingView,Platform } from 'react-native';
 import { useTheme } from 'tamagui';
+import ProductCard from './productCard';
+
+type ProductRecommendationResult = {
+  headline: string;
+  recommendations: Array<{
+    title: string;
+    price: string;
+    mrp_price: string;
+    discount: string;
+    image: string;
+    url: string;
+  }>;
+};
 
 
-// ✅ OpenRouter headers
 const OPENROUTER_HEADERS = {
   Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENROUTER_API_KEY}`,
   'HTTP-Referer': 'https://yourapp.com', // required by OpenRouter
@@ -59,11 +72,13 @@ export default function ChatUI() {
     setInput('');
   };
 
+  console.log(JSON.stringify(messages))
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} // Adjust this offset as needed
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
     <YStack flex={1} height="100%" padding='$2'>
       {/* Chat Header */}
@@ -120,9 +135,9 @@ export default function ChatUI() {
                 }}
               >
                 {m.parts.map((part, i) => {
-                  if (part.type === 'text') {
-                    return (
-                      <Text
+                  switch(part.type){
+                    case 'text':
+                      return <Text
                         key={`${m.id}-${i}`}
                         style={{
                           color: m.role === 'user' ? 'white' : 'black',
@@ -132,7 +147,39 @@ export default function ChatUI() {
                       >
                         {part.text}
                       </Text>
-                    );
+                      case 'tool-showProductRecommendations' :
+                        if(!part.input){
+                          return null
+                        }
+                   const { headline, recommendations } = part.input as ProductRecommendationResult;;
+                        return (
+                        <YStack key={`${m.id}-${i}`} width="100%" gap="$2" marginVertical="$2">
+                          <H4>{headline}</H4>
+                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                           <XStack space="$3" paddingHorizontal="$2">
+                              {recommendations.map((item, index) => {
+                                // Data transformation
+                                const price = parseFloat(item.price.replace(/,/g, ''));
+                                const mrp = parseFloat(item.mrp_price.replace(/,/g, ''));
+                                const discountPercentage = parseInt(item.discount);
+                                const saveAmount = Math.round(mrp - price);
+
+                                return (
+                                  <ProductCard
+                                    key={`${m.id}-${i}-${index}`}
+                                    imageUrl={item.image}
+                                    title={item.title}
+                                    price={price}
+                                    mrp={mrp}
+                                    discountPercentage={discountPercentage}
+                                    saveAmount={saveAmount}
+                                  />
+                                );
+                              })}
+                            </XStack>
+                          </ScrollView>
+                          </YStack>
+                        )
                   }
                   return null;
                 })}
